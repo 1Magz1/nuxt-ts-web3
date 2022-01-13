@@ -1,8 +1,12 @@
+// eslint-disable-next-line import/named
 import { MutationTree } from 'vuex'
-import { IWeb3State } from '~/store/web3/state'
+import { Web3State } from '~/store/web3/state'
 
-const mutations: MutationTree<IWeb3State> = {
-  SET_IS_CONNECTED: (state, payload: boolean) => (state.isConnected = payload)
+const mutations: MutationTree<Web3State> = {
+  setUserAddress: (state, payload: string) => (state.userAddress = payload),
+  setIsConnected: (state, payload: boolean) => (state.isConnected = payload),
+  setChainId: (state, payload: number | string) => (state.chainId = payload),
+  setNetworkName: (state, payload: string) => (state.networkName = payload)
 }
 
 export default mutations
