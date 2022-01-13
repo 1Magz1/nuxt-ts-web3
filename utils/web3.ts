@@ -1,6 +1,5 @@
 import Web3 from 'web3'
 // @ts-ignore
-import Web4 from '@cryptonteam/web4'
 import BigNumber from 'bignumber.js'
 import { output, error, IResponse } from '~/utils/index'
 import { ERC20 } from '~/utils/abis'
@@ -153,5 +152,22 @@ export const connectWallet = async (): Promise<IResponse> => {
     return output({ userAddress, chainId, networkName })
   } catch (err) {
     return error(4001, 'connection error', err)
+  }
+}
+
+export const getTokenData = async (tokenAddress: string) :Promise<any> => {
+  try {
+    const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const data = await Promise.all([
+      instance.methods.symbol().call(),
+      instance.methods.decimals().call(),
+      instance.methods.name().call()])
+    return {
+      symbol: data[0],
+      decimals: data[1],
+      name: data[2]
+    }
+  } catch (err) {
+    console.log('err: ', err)
   }
 }
