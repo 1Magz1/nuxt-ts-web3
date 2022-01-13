@@ -1,8 +1,5 @@
 <template>
   <div class="example">
-    <button class="btn btn-primary" @click="connectWallet">
-      connect wallet
-    </button>
     <div>
       <div>
         Tokens:
@@ -34,10 +31,6 @@ export default MainVue.extend({
     recipient: '',
     amount: ''
   }),
-  async mounted () {
-    await this.connectNode()
-    // await this.connectWallet()
-  },
   computed: {
     ...mapGetters({
       tokensMap: 'token/getTokensMap',
