@@ -5,7 +5,7 @@ import { Web3State } from '~/store/web3/state'
 const getters: GetterTree<Web3State, any> = {
   getUserAddress: (state): string => state.userAddress,
   getIsConnected: (state): boolean => state.isConnected,
-  getNetId: (state): string | number => state.netId,
+  getChainId: (state): string | number => state.chainId,
   getNetworkName: (state): string => state.networkName
 }
 
