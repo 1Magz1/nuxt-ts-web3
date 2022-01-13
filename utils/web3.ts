@@ -4,6 +4,10 @@ import Web4 from '@cryptonteam/web4'
 import BigNumber from 'bignumber.js'
 import { output, error, IResponse } from '~/utils/index'
 import { ERC20 } from '~/utils/abis'
+import {
+  NETWORKS_MAINNET,
+  NETWORKS_TESTNET
+} from '~/utils/constants'
 
 const { IS_MAINNET } = process.env
 
@@ -60,11 +64,13 @@ export const connectWallet = async (): Promise<IResponse> => {
     }
 
     chainId = await web3Wallet.eth.net.getId()
+    // @ts-ignore
+    const networkName: string = IS_MAINNET === 'true' ? NETWORKS_MAINNET[chainId] : NETWORKS_TESTNET[chainId]
 
     web4 = new Web4()
     web4.setProvider(currentProvider, userAddress)
 
-    return output({ userAddress, chainId })
+    return output({ userAddress, chainId, networkName })
   } catch (err) {
     return error(4001, 'connection error', err)
   }
