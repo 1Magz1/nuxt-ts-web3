@@ -39,22 +39,7 @@ const methodSwitchRpcEth = {
 
 BigNumber.config({ EXPONENTIAL_AT: 60 })
 
-export const fetchContractData = async (method: string, abi: Array<any>, address: string, params?: Array<any>): Promise<any> => {
-  try {
-    const contract = new web3Guest.eth.Contract(abi, address)
-    return await contract.methods[method].apply(this, params).call()
-  } catch (e) {
-    console.log(e)
-    return ''
-  }
-}
-
-export const createInst = async (abi: Array<any>, address: string): Promise<any> => {
-  const abs = web4.getContractAbstraction(abi)
-  return await abs.getInstance(address)
-}
-
-export const changeCurrentChain = async () :Promise<any> => {
+const setCurrentProvider = () :any => {
   // @ts-ignore
   const { ethereum } = window
 
@@ -74,6 +59,50 @@ export const changeCurrentChain = async () :Promise<any> => {
     return error(449, 'no metamask')
   }
 
+  return currentProvider
+}
+
+// handle function
+
+export const disconnect = () :void => {
+  const currentProvider = setCurrentProvider()
+  console.log('Disconnected')
+  // store.dispatch('web3/disconnectUserWallet')
+  // eslint-disable-next-line no-use-before-define
+  currentProvider.removeListener('chainChanged', handleChainChanged)
+  // eslint-disable-next-line no-use-before-define
+  currentProvider.removeListener('accountsChanged', handleAccountsChanged)
+  // eslint-disable-next-line no-use-before-define
+  currentProvider.removeListener('disconnect', handleDisconnected)
+}
+
+async function handleChainChanged (chain: any):Promise<any> {
+  chainId = +chain
+  if (chainId !== store.getters['web3/getNetId']) {
+    // eslint-disable-next-line no-use-before-define
+    await connectWallet()
+  } else {
+    disconnect()
+  }
+}
+
+export const handleAccountsChanged = async (account:any):Promise<any> => {
+  if (account.length) {
+    await store.dispatch('web3/connectUserWallet')
+  } else {
+    disconnect()
+  }
+}
+
+export const handleDisconnected = () :void => {
+  disconnect()
+}
+
+// web3 function
+
+export const changeCurrentChain = async () :Promise<any> => {
+  const currentProvider = setCurrentProvider()
+
   if (IS_MAINNET === 'false') {
     try {
       await currentProvider.request(methodSwitchEthereumChainRinkeby)
@@ -81,7 +110,7 @@ export const changeCurrentChain = async () :Promise<any> => {
       console.log('err: ', switchError)
       return false
     }
-  } else {
+  } else if (IS_MAINNET === 'true') {
     try {
       await currentProvider.request(methodSwitchRpcEth)
     } catch (switchError) {
@@ -96,24 +125,11 @@ export const changeCurrentChain = async () :Promise<any> => {
 
 export const connectWallet = async (): Promise<IResponse> => {
   try {
-    // @ts-ignore
-    const { ethereum } = window
+    const currentProvider = setCurrentProvider()
 
-    let currentProvider
-
-    if (ethereum) {
-      if (ethereum.providers && ethereum.providers.length) {
-        currentProvider = ethereum.providers?.find((provider: any) => provider.isMetaMask)
-      } else if (ethereum.isMetaMask) {
-        currentProvider = ethereum
-      }
-    } else {
-      return error(450, 'no ethereum')
-    }
-
-    if (!currentProvider) {
-      return error(449, 'no metamask')
-    }
+    currentProvider.removeListener('chainChanged', handleChainChanged)
+    currentProvider.removeListener('accountsChanged', handleAccountsChanged)
+    currentProvider.removeListener('disconnect', handleDisconnected)
 
     web3Wallet = new Web3(currentProvider)
     userAddress = await web3Wallet.eth.getCoinbase()
@@ -130,8 +146,9 @@ export const connectWallet = async (): Promise<IResponse> => {
       await changeCurrentChain()
     }
 
-    web4 = new Web4()
-    web4.setProvider(currentProvider, userAddress)
+    currentProvider.on('chainChanged', handleChainChanged)
+    currentProvider.on('accountsChanged', handleAccountsChanged)
+    currentProvider.on('disconnect', handleDisconnected)
 
     return output({ userAddress, chainId, networkName })
   } catch (err) {
