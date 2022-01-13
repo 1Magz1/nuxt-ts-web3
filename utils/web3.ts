@@ -141,6 +141,7 @@ export const connectWallet = async (): Promise<IResponse> => {
     chainId = await web3Wallet.eth.net.getId()
     // @ts-ignore
     const networkName: string = IS_MAINNET === 'true' ? NETWORKS_MAINNET[chainId] : NETWORKS_TESTNET[chainId]
+
     if (networkName !== 'ETH') {
       await changeCurrentChain()
     }
