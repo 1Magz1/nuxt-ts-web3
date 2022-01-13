@@ -1,5 +1,6 @@
 <template>
   <div class="header">
+    <span>Network {{ networkName }}</span>
     <button class="btn btn-primary" @click="connectWallet">
       <span v-if="isConnected">{{ userAddress }}</span>
       <span v-else>Connect Wallet</span>
@@ -15,7 +16,8 @@ import { mapGetters } from 'vuex'
   computed: {
     ...mapGetters('web3', {
       userAddress: 'getUserAddress',
-      isConnected: 'getIsConnected'
+      isConnected: 'getIsConnected',
+      networkName: 'getNetworkName'
     })
   }
 })
