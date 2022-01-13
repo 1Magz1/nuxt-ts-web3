@@ -5,7 +5,7 @@ require('dotenv').config()
 export default {
   ssr: false,
   head: {
-    title: 'frontend-starter-kit-2',
+    title: 'nuxt-ts-web3',
     htmlAttrs: {
       lang: 'en'
     },
