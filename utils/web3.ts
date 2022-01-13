@@ -79,7 +79,6 @@ export const disconnect = () :void => {
 async function handleChainChanged (chain: any):Promise<any> {
   chainId = +chain
   if (chainId !== store.getters['web3/getChainId']) {
-    // eslint-disable-next-line no-use-before-define
     await connectWallet()
   } else {
     disconnect()
