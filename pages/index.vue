@@ -4,7 +4,8 @@
     <div v-if="selectedTokenInfo.symbol" class="balance">
       <span>{{ selectedTokenInfo.text }} balance is {{ selectedTokenBalance }}</span>
     </div>
-    <Form />
+    <span v-if="!isConnected">Please connect your wallet</span>
+    <Form v-else :options="selectedTokenInfo" />
   </div>
 </template>
 <script lang="ts">

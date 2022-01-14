@@ -181,3 +181,61 @@ export const getTokenBalance = async (tokenAddress: string, decimals: number): P
     console.log('err: ', err)
   }
 }
+
+const allowance = async (tokenAddress: string, recipientAddress: string) :Promise<any> => {
+  try {
+    let allowance
+    const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const decimals = await instance.methods.decimals().call()
+    if (decimals) {
+      allowance = await instance.methods.allowance(userAddress, recipientAddress).call()
+    }
+
+    return new BigNumber(allowance).shiftedBy(-decimals).toString()
+  } catch (err) {
+    console.log('err: ', err)
+  }
+}
+
+const approve = async (tokenAddress: string, recipientAddress: string) :Promise<any> => {
+  try {
+    let approve
+    const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const decimals = await instance.methods.decimals().call()
+    if (decimals) {
+      const amount = new BigNumber(1000000).shiftedBy(+decimals).toString()
+      approve = await instance.methods.approve(recipientAddress, amount).send({ from: userAddress })
+    }
+
+    return approve
+  } catch (err) {
+    console.log('err: ', err)
+  }
+}
+
+const tokenTransfer = async (tokenAddress: string, recipientAddress: string, tokenAmount: string):Promise <any> => {
+  try {
+    const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const decimals = await instance.methods.decimals().call()
+    const amount = new BigNumber(tokenAmount).shiftedBy(+decimals).toString()
+    console.log('tokenTransfer', instance.methods)
+    return await instance.methods.transferFrom(userAddress, recipientAddress, 1).call({ from: userAddress })
+  } catch (err) {
+    console.log('err: ', err)
+  }
+}
+
+export const sendTokenToRecipient = async (tokenAddress: string, recipientAddress: string, tokenAmount: string):Promise <any> => {
+  const allowanceAmount = await allowance(tokenAddress, recipientAddress)
+  console.log(allowanceAmount)
+  console.log(tokenAmount)
+  if (allowanceAmount <= 0 || allowanceAmount < tokenAmount) {
+    console.log('approve')
+    const approveAmount = await approve(tokenAddress, recipientAddress)
+    if (approveAmount) {
+      await tokenTransfer(tokenAddress, recipientAddress, tokenAmount)
+    }
+  } else {
+    await tokenTransfer(tokenAddress, recipientAddress, tokenAmount)
+  }
+}
