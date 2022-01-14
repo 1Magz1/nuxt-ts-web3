@@ -20,6 +20,12 @@ const actions: ActionTree<Web3State, any> = {
     commit('setChainId', response.result.chainId)
     commit('setNetworkName', response.result.networkName)
   },
+  disconnectWallet ({ commit }) {
+    commit('setIsConnected', false)
+    commit('setUserAddress', '')
+    commit('setChainId', '')
+    commit('setNetworkName', '')
+  },
   async getTokenData (_, payload) {
     return await getTokenData(payload)
   },

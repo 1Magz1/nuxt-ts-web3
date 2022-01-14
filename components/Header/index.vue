@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <span>Network {{ networkName }}</span>
+    <span v-if="isConnected">Network {{ networkName }}</span>
     <button class="btn btn-primary" @click="connectWallet">
       <span v-if="isConnected">{{ userAddress }}</span>
       <span v-else>Connect Wallet</span>

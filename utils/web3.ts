@@ -66,7 +66,7 @@ const setCurrentProvider = () :any => {
 export const disconnect = () :void => {
   const currentProvider = setCurrentProvider()
   console.log('Disconnected')
-  // store.dispatch('web3/disconnectUserWallet')
+  store.dispatch('web3/disconnectWallet')
   // eslint-disable-next-line no-use-before-define
   currentProvider.removeListener('chainChanged', handleChainChanged)
   // eslint-disable-next-line no-use-before-define
