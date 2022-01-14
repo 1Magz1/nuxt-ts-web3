@@ -1,16 +1,21 @@
 <template>
-  <div class="example">
+  <div class="home">
     <b-form-select v-model="selected" :options="options" />
     <div v-if="selectedTokenInfo.symbol" class="balance">
       <span>{{ selectedTokenInfo.text }} balance is {{ selectedTokenBalance }}</span>
     </div>
+    <Form />
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
+import Form from '~/components/Form/index.vue'
 
 @Component({
+  components: {
+    Form
+  },
   computed: {
     ...mapGetters('web3', {
       isConnected: 'getIsConnected'
@@ -72,7 +77,7 @@ export default class Index extends Vue {
 
 </script>
 <style lang="scss" scoped>
-.example {
+.home {
   @include container;
 }
 </style>
