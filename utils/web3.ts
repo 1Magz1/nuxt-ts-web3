@@ -182,13 +182,13 @@ export const getTokenBalance = async (tokenAddress: string, decimals: number): P
   }
 }
 
-const allowance = async (tokenAddress: string, recipientAddress: string) :Promise<any> => {
+export const allowance = async (tokenAddress: string, recipientAddress: string): Promise<any> => {
   try {
     let allowance
     const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
     const decimals = await instance.methods.decimals().call()
     if (decimals) {
-      allowance = await instance.methods.allowance(userAddress, recipientAddress).call()
+      allowance = await instance.methods.allowance(recipientAddress, userAddress).call()
     }
 
     return new BigNumber(allowance).shiftedBy(-decimals).toString()
@@ -197,7 +197,7 @@ const allowance = async (tokenAddress: string, recipientAddress: string) :Promis
   }
 }
 
-const approve = async (tokenAddress: string, recipientAddress: string) :Promise<any> => {
+export const approve = async (tokenAddress: string, recipientAddress: string) :Promise<any> => {
   try {
     let approve
     const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
@@ -213,29 +213,13 @@ const approve = async (tokenAddress: string, recipientAddress: string) :Promise<
   }
 }
 
-const tokenTransfer = async (tokenAddress: string, recipientAddress: string, tokenAmount: string):Promise <any> => {
+export const tokenTransfer = async (tokenAddress: string, recipientAddress: string, tokenAmount: string):Promise <any> => {
   try {
     const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
     const decimals = await instance.methods.decimals().call()
     const amount = new BigNumber(tokenAmount).shiftedBy(+decimals).toString()
-    console.log('tokenTransfer', instance.methods)
-    return await instance.methods.transferFrom(userAddress, recipientAddress, 1).call({ from: userAddress })
+    return await instance.methods.transfer(recipientAddress, amount).send({ from: userAddress })
   } catch (err) {
     console.log('err: ', err)
-  }
-}
-
-export const sendTokenToRecipient = async (tokenAddress: string, recipientAddress: string, tokenAmount: string):Promise <any> => {
-  const allowanceAmount = await allowance(tokenAddress, recipientAddress)
-  console.log(allowanceAmount)
-  console.log(tokenAmount)
-  if (allowanceAmount <= 0 || allowanceAmount < tokenAmount) {
-    console.log('approve')
-    const approveAmount = await approve(tokenAddress, recipientAddress)
-    if (approveAmount) {
-      await tokenTransfer(tokenAddress, recipientAddress, tokenAmount)
-    }
-  } else {
-    await tokenTransfer(tokenAddress, recipientAddress, tokenAmount)
   }
 }

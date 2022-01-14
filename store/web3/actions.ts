@@ -2,10 +2,12 @@
 import { ActionTree } from 'vuex'
 import { Web3State } from '~/store/web3/state'
 import {
+  allowance,
+  approve,
   connectWallet,
   getTokenBalance,
   getTokenData,
-  sendTokenToRecipient
+  tokenTransfer
 } from '~/utils/web3'
 
 const actions: ActionTree<Web3State, any> = {
@@ -31,6 +33,12 @@ const actions: ActionTree<Web3State, any> = {
     commit('setChainId', '')
     commit('setNetworkName', '')
   },
+  async getAllowance (_, payload) {
+    return await allowance(payload.tokenAddress, payload.recipientAddress)
+  },
+  async getApprove (_, payload) {
+    await approve(payload.tokenAddress, payload.recipientAddress)
+  },
   async getTokenData (_, payload) {
     return await getTokenData(payload)
   },
@@ -38,7 +46,7 @@ const actions: ActionTree<Web3State, any> = {
     return await getTokenBalance(payload.value, payload.decimals)
   },
   async tokenTransfer (_, payload) {
-    return await sendTokenToRecipient(payload.tokenAddress, payload.recipientAddress, payload.tokenAmount)
+    return await tokenTransfer(payload.tokenAddress, payload.recipientAddress, payload.tokenAmount)
   }
 }
 
