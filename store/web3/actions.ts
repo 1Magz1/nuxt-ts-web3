@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named
 import { ActionTree } from 'vuex'
 import { Web3State } from '~/store/web3/state'
-import { connectWallet, getTokenData } from '~/utils/web3'
+import { connectWallet, getTokenBalance, getTokenData } from '~/utils/web3'
 
 const actions: ActionTree<Web3State, any> = {
   async connectWallet ({ commit }) {
@@ -22,6 +22,9 @@ const actions: ActionTree<Web3State, any> = {
   },
   async getTokenData (_, payload) {
     return await getTokenData(payload)
+  },
+  async getTokenBalance (_, payload) {
+    return await getTokenBalance(payload.value, payload.decimals)
   }
 }
 

@@ -1,6 +1,9 @@
 <template>
   <div v-if="isConnected" class="example">
     <b-form-select v-model="selected" :options="options" />
+    <div v-if="selectedTokenInfo.name" class="balance">
+      <span>{{ selectedTokenInfo.name }} balance is {{ selectedTokenBalance }}</span>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -15,7 +18,7 @@ import { mapGetters } from 'vuex'
   }
 })
 export default class Index extends Vue {
-  private selected = 'a'
+  private selected = ''
 
   private options: Array<any> = [
     {
@@ -36,9 +39,13 @@ export default class Index extends Vue {
     }
   ]
 
+  private selectedTokenInfo = {}
+
+  private selectedTokenBalance =''
+
   @Watch('isConnected')
   async isConnectedChanged (newVal: boolean): Promise<any> {
-    if (newVal === false) { return }
+    if (!newVal) { return }
 
     const address = this.options.map(item => item.value)
 
@@ -48,6 +55,12 @@ export default class Index extends Vue {
       item.text = item.name
       return item
     })
+  }
+
+  @Watch('selected')
+  async selectedChanged (selected: string): Promise<any> {
+    this.selectedTokenInfo = this.options.filter(address => address.value === selected)[0]
+    this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
   }
 }
 

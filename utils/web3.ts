@@ -75,7 +75,7 @@ export const disconnect = () :void => {
   currentProvider.removeListener('disconnect', handleDisconnected)
 }
 
-async function handleChainChanged (chain: any):Promise<any> {
+async function handleChainChanged (chain: any): Promise<any> {
   chainId = +chain
   if (chainId !== store.getters['web3/getChainId']) {
     await connectWallet()
@@ -84,7 +84,7 @@ async function handleChainChanged (chain: any):Promise<any> {
   }
 }
 
-export const handleAccountsChanged = async (account:any):Promise<any> => {
+export const handleAccountsChanged = async (account:any): Promise<any> => {
   if (account.length) {
     await store.dispatch('web3/connectWallet')
   } else {
@@ -92,13 +92,13 @@ export const handleAccountsChanged = async (account:any):Promise<any> => {
   }
 }
 
-export const handleDisconnected = () :void => {
+export const handleDisconnected = (): void => {
   disconnect()
 }
 
 // web3 function
 
-export const changeCurrentChain = async () :Promise<any> => {
+export const changeCurrentChain = async (): Promise<any> => {
   const currentProvider = setCurrentProvider()
 
   if (IS_MAINNET === 'false') {
@@ -155,9 +155,9 @@ export const connectWallet = async (): Promise<IResponse> => {
   }
 }
 
-export const getTokenData = async (tokenAddress: string) :Promise<any> => {
+export const getTokenData = async (tokenAddress: string): Promise<any> => {
   try {
-    const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
     const data = await Promise.all([
       instance.methods.symbol().call(),
       instance.methods.decimals().call(),
@@ -167,6 +167,16 @@ export const getTokenData = async (tokenAddress: string) :Promise<any> => {
       decimals: data[1],
       name: data[2]
     }
+  } catch (err) {
+    console.log('err: ', err)
+  }
+}
+
+export const getTokenBalance = async (tokenAddress: string, decimals: number): Promise<any> => {
+  try {
+    const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+    const balance = await instance.methods.balanceOf(userAddress).call()
+    return new BigNumber(balance).shiftedBy(-decimals).toString()
   } catch (err) {
     console.log('err: ', err)
   }
