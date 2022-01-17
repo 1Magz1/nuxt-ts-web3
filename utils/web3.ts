@@ -224,33 +224,20 @@ export const tokenTransfer = async (tokenAddress: string, recipientAddress: stri
   }
 }
 
-export const subscribeToTransferEvents = async (tokenAddress: string): Promise<any> => {
+export const subscribeToEvents = async (tokenAddress: string): Promise<any> => {
   const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
-  instance.events.Transfer()
-    .on('data', (event: any) => {
-      console.log('event', event)
-      const transaction = store.getters['web3/getTransactionList']
-      const transactionList = JSON.parse(JSON.stringify(transaction))
-      transactionList.push(event)
+  console.log('subscribeToEvents')
 
-      store.commit('web3/setTransactionList', transactionList)
+  instance.events.allEvents()
+    .on('data', (event: any) => {
+      if (event.event === 'Transfer' || event.event === 'Approval') {
+        const transaction = store.getters['web3/getTransactionList']
+        const transactionList = JSON.parse(JSON.stringify(transaction))
+        transactionList.push(event)
+        store.commit('web3/setTransactionList', transactionList)
+      }
     })
     .on('error', (err: any) => {
       console.log('subscribeToTransferEvents', err)
-    })
-}
-
-export const subscribeToApprovalEvents = async (tokenAddress: string): Promise<any> => {
-  const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
-  instance.events.Approval()
-    .on('data', (event: any) => {
-      const transaction = store.getters['web3/getTransactionList']
-      const transactionList = JSON.parse(JSON.stringify(transaction))
-      transactionList.push(event)
-
-      store.commit('web3/setTransactionList', transactionList)
-    })
-    .on('error', (err: any) => {
-      console.log('subscribeToApprovalEvents', err)
     })
 }

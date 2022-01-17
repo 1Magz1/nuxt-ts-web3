@@ -7,8 +7,7 @@ import {
   connectWallet,
   getTokenBalance,
   getTokenData,
-  subscribeToApprovalEvents,
-  subscribeToTransferEvents,
+  subscribeToEvents,
   tokenTransfer
 } from '~/utils/web3'
 
@@ -51,10 +50,7 @@ const actions: ActionTree<Web3State, any> = {
     return await tokenTransfer(payload.tokenAddress, payload.recipientAddress, payload.tokenAmount)
   },
   async subscribeToTransferEvents (_, payload) {
-    await subscribeToTransferEvents(payload.value)
-  },
-  async subscribeToApprovalEvents (_, payload) {
-    await subscribeToApprovalEvents(payload.value)
+    await subscribeToEvents(payload.value)
   }
 }
 

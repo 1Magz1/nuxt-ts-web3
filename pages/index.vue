@@ -6,15 +6,18 @@
     </div>
     <span v-if="!isConnected">Please connect your wallet</span>
     <Form v-else :options="selectedTokenInfo" @update-token-balance="updateTokenBalance" />
+    <TransactionList />
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import Form from '~/components/Form/index.vue'
+import TransactionList from '~/components/TransactionList/index.vue'
 
 @Component({
   components: {
-    Form
+    Form,
+    TransactionList
   }
 })
 export default class Index extends Vue {
@@ -53,10 +56,7 @@ export default class Index extends Vue {
   private async getTokenInfo (options: Array<any>, selectedToken: string): Promise<any> {
     this.selectedTokenInfo = options.filter(address => address.value === selectedToken)[0]
     if (this.selectedTokenInfo) {
-      await Promise.all([
-        await this.$store.dispatch('web3/subscribeToTransferEvents', this.selectedTokenInfo),
-        await this.$store.dispatch('web3/subscribeToApprovalEvents', this.selectedTokenInfo)
-      ])
+      await this.$store.dispatch('web3/subscribeToTransferEvents', this.selectedTokenInfo)
     }
 
     this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
