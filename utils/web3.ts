@@ -237,6 +237,6 @@ export const subscribeToEvents = async (tokenAddress: string): Promise<any> => {
       }
     })
     .on('error', (err: any) => {
-      console.log('subscribeToTransferEvents', err)
+      console.log('subscribeToEvents', err)
     })
 }
