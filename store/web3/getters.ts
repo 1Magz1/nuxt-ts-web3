@@ -6,7 +6,8 @@ const getters: GetterTree<Web3State, any> = {
   getUserAddress: (state): string => state.userAddress,
   getIsConnected: (state): boolean => state.isConnected,
   getChainId: (state): string | number => state.chainId,
-  getNetworkName: (state): string => state.networkName
+  getNetworkName: (state): string => state.networkName,
+  getTransactionList: (state): Array<Record<string, undefined>> => state.transactionList
 }
 
 export default getters

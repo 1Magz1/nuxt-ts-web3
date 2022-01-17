@@ -52,6 +52,13 @@ export default class Index extends Vue {
   // Methods
   private async getTokenInfo (options: Array<any>, selectedToken: string): Promise<any> {
     this.selectedTokenInfo = options.filter(address => address.value === selectedToken)[0]
+    if (this.selectedTokenInfo) {
+      await Promise.all([
+        await this.$store.dispatch('web3/subscribeToTransferEvents', this.selectedTokenInfo),
+        await this.$store.dispatch('web3/subscribeToApprovalEvents', this.selectedTokenInfo)
+      ])
+    }
+
     this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
   }
 

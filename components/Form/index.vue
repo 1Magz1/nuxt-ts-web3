@@ -8,13 +8,13 @@
     <b-input-group append="Amount" class="mt-1">
       <b-form-input v-model="tokenAmount" />
     </b-input-group>
-    <button :disabled="isDisabledButton" class="btn btn-primary mt-2" @click="getAllowance">
+    <button :disabled="!recipientAddress" class="btn btn-primary mt-2" @click="getAllowance">
       Allowance
     </button>
     <button :disabled="isDisabledButton" class="btn btn-primary mt-2" @click="getApprove">
       Approve
     </button>
-    <button class="btn btn-primary mt-2" @click="tokenTransfer">
+    <button :disabled="isDisabledButton" class="btn btn-primary mt-2" @click="tokenTransfer">
       Transfer
     </button>
   </div>

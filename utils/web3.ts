@@ -1,6 +1,7 @@
 import Web3 from 'web3'
 // @ts-ignore
 import BigNumber from 'bignumber.js'
+import { createLogger } from 'vuex'
 import { output, error, IResponse } from '~/utils/index'
 import { ERC20 } from '~/utils/abis'
 import {
@@ -15,6 +16,7 @@ let web3Wallet: any
 let userAddress: string
 let chainId: number
 let store : any
+const subscribedEvents = {}
 
 if (process.browser) {
   window.onNuxtReady(({ $store } : any) => {
@@ -186,7 +188,7 @@ export const allowance = async (tokenAddress: string, recipientAddress: string):
     const instance : any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
     const decimals = await instance.methods.decimals().call()
     if (decimals) {
-      allowance = await instance.methods.allowance(recipientAddress, userAddress).call()
+      allowance = await instance.methods.allowance(userAddress, recipientAddress).call()
     }
 
     return new BigNumber(allowance).shiftedBy(-decimals).toString()
@@ -220,4 +222,35 @@ export const tokenTransfer = async (tokenAddress: string, recipientAddress: stri
   } catch (err) {
     console.log('err: ', err)
   }
+}
+
+export const subscribeToTransferEvents = async (tokenAddress: string): Promise<any> => {
+  const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+  instance.events.Transfer()
+    .on('data', (event: any) => {
+      console.log('event', event)
+      const transaction = store.getters['web3/getTransactionList']
+      const transactionList = JSON.parse(JSON.stringify(transaction))
+      transactionList.push(event)
+
+      store.commit('web3/setTransactionList', transactionList)
+    })
+    .on('error', (err: any) => {
+      console.log('subscribeToTransferEvents', err)
+    })
+}
+
+export const subscribeToApprovalEvents = async (tokenAddress: string): Promise<any> => {
+  const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
+  instance.events.Approval()
+    .on('data', (event: any) => {
+      const transaction = store.getters['web3/getTransactionList']
+      const transactionList = JSON.parse(JSON.stringify(transaction))
+      transactionList.push(event)
+
+      store.commit('web3/setTransactionList', transactionList)
+    })
+    .on('error', (err: any) => {
+      console.log('subscribeToApprovalEvents', err)
+    })
 }
