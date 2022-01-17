@@ -226,7 +226,6 @@ export const tokenTransfer = async (tokenAddress: string, recipientAddress: stri
 
 export const subscribeToEvents = async (tokenAddress: string): Promise<any> => {
   const instance: any = await new web3Wallet.eth.Contract(ERC20, tokenAddress)
-  console.log('subscribeToEvents')
 
   instance.events.allEvents()
     .on('data', (event: any) => {
