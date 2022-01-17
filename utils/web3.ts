@@ -12,8 +12,6 @@ declare let window: any
 const { IS_MAINNET } = process.env
 
 let web3Wallet: any
-let web3Guest: any
-let web4: any
 let userAddress: string
 let chainId: number
 let store : any
