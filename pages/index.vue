@@ -5,12 +5,11 @@
       <span>{{ selectedTokenInfo.text }} balance is {{ selectedTokenBalance }}</span>
     </div>
     <span v-if="!isConnected">Please connect your wallet</span>
-    <Form v-else :options="selectedTokenInfo" />
+    <Form v-else :options="selectedTokenInfo" @update-token-balance="updateTokenBalance" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import { mapGetters } from 'vuex'
 import Form from '~/components/Form/index.vue'
 
 @Component({
@@ -53,6 +52,11 @@ export default class Index extends Vue {
   // Methods
   private async getTokenInfo (options: Array<any>, selectedToken: string): Promise<any> {
     this.selectedTokenInfo = options.filter(address => address.value === selectedToken)[0]
+    this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
+  }
+
+  private async updateTokenBalance (isUpdate: boolean): Promise<any> {
+    if (!isUpdate) { return }
     this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
   }
 

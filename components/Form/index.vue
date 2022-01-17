@@ -14,14 +14,14 @@
     <button :disabled="isDisabledButton" class="btn btn-primary mt-2" @click="getApprove">
       Approve
     </button>
-    <button :disabled="isDisabledButton" class="btn btn-primary mt-2" @click="tokenTransfer">
+    <button class="btn btn-primary mt-2" @click="tokenTransfer">
       Transfer
     </button>
   </div>
 </template>
 
 <script  lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 
 @Component
 export default class Form extends Vue {
@@ -57,14 +57,28 @@ export default class Form extends Vue {
     this.allowance = await this.$store.dispatch('web3/getApprove', payload)
   }
 
-  private tokenTransfer (): any {
+  private async tokenTransfer (): Promise<any> {
     const payload = {
       tokenAddress: this.options?.value,
       recipientAddress: this.recipientAddress,
       tokenAmount: this.tokenAmount
     }
+    let res
+    try {
+      res = await this.$store.dispatch('web3/tokenTransfer', payload)
+    } catch (err) {
+      console.log('tokenTransfer', err)
+    }
 
-    this.$store.dispatch('web3/tokenTransfer', payload)
+    if (res && res.status) {
+      this.updateTokenBalance()
+    }
+  }
+
+  // Emit
+  @Emit()
+  updateTokenBalance (): boolean {
+    return true
   }
 }
 </script>
