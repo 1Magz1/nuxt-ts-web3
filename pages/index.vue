@@ -16,14 +16,10 @@ import Form from '~/components/Form/index.vue'
 @Component({
   components: {
     Form
-  },
-  computed: {
-    ...mapGetters('web3', {
-      isConnected: 'getIsConnected'
-    })
   }
 })
 export default class Index extends Vue {
+  // Data
   private selected = '0x4b107a23361770534bd1839171bbf4b0eb56485c'
 
   private options: Array<any> = [
@@ -49,11 +45,18 @@ export default class Index extends Vue {
 
   private selectedTokenBalance =''
 
+  // Getters
+  get isConnected (): boolean {
+    return this.$store.getters['web3/getIsConnected']
+  }
+
+  // Methods
   private async getTokenInfo (options: Array<any>, selectedToken: string): Promise<any> {
     this.selectedTokenInfo = options.filter(address => address.value === selectedToken)[0]
     this.selectedTokenBalance = await this.$store.dispatch('web3/getTokenBalance', this.selectedTokenInfo)
   }
 
+  // Watch
   @Watch('isConnected')
   async isConnectedChanged (newVal: boolean): Promise<any> {
     if (!newVal) { return }
