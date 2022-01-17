@@ -23,31 +23,35 @@
 <script  lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator'
 
-@Component({
-  computed: {
-    isDisabledButton (): any {
-      return !(this.recipientAddress && this.tokenAmount)
-    }
-  }
-})
+@Component
 export default class Form extends Vue {
+  // Data
   private recipientAddress = ''
 
   private tokenAmount = ''
 
   private allowance = ''
 
-  private async getAllowance (): Promise<string> {
+  // Props
+  @Prop(Object) readonly options: Record<string, string> | undefined
+
+  // Getters
+  get isDisabledButton (): any {
+    return !(this.recipientAddress && this.tokenAmount)
+  }
+
+  // Methods
+  private async getAllowance (): Promise<any> {
     const payload = {
-      tokenAddress: this.options.value,
+      tokenAddress: this.options?.value,
       recipientAddress: this.recipientAddress
     }
     this.allowance = await this.$store.dispatch('web3/getAllowance', payload)
   }
 
-  private async getApprove (): Promise<string> {
+  private async getApprove (): Promise<any> {
     const payload = {
-      tokenAddress: this.options.value,
+      tokenAddress: this.options?.value,
       recipientAddress: this.recipientAddress
     }
     this.allowance = await this.$store.dispatch('web3/getApprove', payload)
@@ -55,15 +59,13 @@ export default class Form extends Vue {
 
   private tokenTransfer (): any {
     const payload = {
-      tokenAddress: this.options.value,
+      tokenAddress: this.options?.value,
       recipientAddress: this.recipientAddress,
       tokenAmount: this.tokenAmount
     }
 
     this.$store.dispatch('web3/tokenTransfer', payload)
   }
-
-  @Prop(Object) readonly options: Record<string, string> | undefined
 }
 </script>
 
