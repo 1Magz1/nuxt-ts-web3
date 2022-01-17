@@ -8,6 +8,9 @@ export default Vue.extend({
     },
     SetLoader (value: boolean) {
       this.$store.dispatch('loader/setLoading', value)
+    },
+    SubstrString (value: string, from: number, length: number): string {
+      return value.substr(from, length)
     }
   }
 })

@@ -2,15 +2,16 @@
   <div class="header">
     <span v-if="isConnected">Network {{ networkName }}</span>
     <button class="btn btn-primary" @click="connectWallet">
-      <span v-if="isConnected">{{ userAddress }}</span>
+      <span v-if="isConnected">{{ SubstrString(userAddress, 0, 7) + '...' + SubstrString(userAddress, userAddress.length - 4, 4) }}</span>
       <span v-else>Connect Wallet</span>
     </button>
   </div>
 </template>
 
 <script  lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Mixins } from 'vue-property-decorator'
 import { mapGetters } from 'vuex'
+import MainVue from '~/mixins/MainVue'
 
 @Component({
   computed: {
@@ -21,7 +22,7 @@ import { mapGetters } from 'vuex'
     })
   }
 })
-export default class Header extends Vue {
+export default class Header extends Mixins(MainVue) {
   public connectWallet (): void {
     this.$store.dispatch('web3/connectWallet')
   }
